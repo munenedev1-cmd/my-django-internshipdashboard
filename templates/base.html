@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Veterinary Internship Portal{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav-inner">
+            <a href="{% url 'home' %}" class="brand">Ministry of Agriculture and Livestock Development</a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'apply' %}">Application Form</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="portal-shell container">
+        <aside class="portal-sidebar">
+            <div class="emblem-wrap">
+                <img src="/static/images/court-of-arms.png" alt="Court of Arms emblem" class="emblem-image">
+            </div>
+            <div class="sidebar-text">
+                <span class="gov-label">MINISTRY OF AGRICULTURE AND LIVESTOCK DEVELOPMENT</span>
+                <h2>Directorate of Veterinary Services</h2>
+                <p>Veterinary Internship Programme</p>
+            </div>
+        </aside>
+
+        <section class="content-panel">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+</body>
+</html>

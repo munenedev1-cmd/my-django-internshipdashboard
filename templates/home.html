@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Veterinary Internship Programme</h1>
+    <p>
+        The Veterinary Internship Programme is a mandatory 52-week training programme for eligible Kenyan Veterinary and Animal Health graduates.
+    </p>
+    <div class="button-stack">
+        {% if user.is_authenticated %}
+            <a class="btn" href="{% url 'dashboard' %}">Go to dashboard</a>
+            <a class="btn btn-secondary" href="{% url 'apply' %}">Submit application</a>
+        {% else %}
+            <a class="btn" href="{% url 'register' %}">Create account</a>
+            <a class="btn btn-secondary" href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
