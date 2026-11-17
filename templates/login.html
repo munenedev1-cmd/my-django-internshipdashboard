@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="card small-card">
+    <h2>Welcome back</h2>
+    <p class="muted">Sign in to continue with your internship application.</p>
+
+    <form method="post" class="stacked-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<small class="help-text">{{ field.help_text }}</small>{% endif %}
+                {% for error in field.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn">Login</button>
+
+        <div class="form-footer">
+            <span>Need an account?</span>
+            <a href="{% url 'register' %}">Create one</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="card dashboard-card">
+    <div class="header-row">
+        <div>
+            <span class="eyebrow">Applicant portal</span>
+            <h2>Welcome, {{ user.get_full_name|default:user.username }}</h2>
+        </div>
+        <span class="status-pill status-{{ application.status|default:'draft' }}">
+            {{ application.get_status_display|default:'Draft' }}
+        </span>
+    </div>
+
+    {% if application %}
+        <div class="dashboard-grid">
+            <div class="mini-stat">
+                <span class="mini-label">Application status</span>
+                <strong>{{ application.get_status_display }}</strong>
+            </div>
+            <div class="mini-stat">
+                <span class="mini-label">Institution</span>
+                <strong>{{ application.institution }}</strong>
+            </div>
+            <div class="mini-stat">
+                <span class="mini-label">Preferred placement</span>
+                <strong>{{ application.internship_preference }}</strong>
+            </div>
+        </div>
+
+        <div class="timeline-panel">
+            <h3>Application progress</h3>
+            <div class="timeline">
+                {% for key, label, state in status_steps %}
+                    <div class="timeline-step step-{{ state }}">
+                        <span class="step-dot"></span>
+                        <div>
+                            <strong>{{ label }}</strong>
+                            {% if state == 'current' %}<small>In progress</small>{% elif state == 'done' %}<small>Completed</small>{% else %}<small>Pending</small>{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>Applicant summary</h3>
+            <dl class="profile-list">
+                <div><dt>Full name</dt><dd>{{ application.full_name }}</dd></div>
+                <div><dt>Email</dt><dd>{{ application.email }}</dd></div>
+                <div><dt>Mobile number</dt><dd>{{ application.mobile_number }}</dd></div>
+                <div><dt>Institution</dt><dd>{{ application.institution }}</dd></div>
+                <div><dt>County of birth</dt><dd>{{ application.county_of_birth }}</dd></div>
+                <div><dt>Preferred internship placement</dt><dd>{{ application.internship_preference }}</dd></div>
+            </dl>
+        </div>
+
+        <div class="button-stack">
+            <a class="btn" href="{% url 'apply' %}">Edit application</a>
+            <a class="btn btn-secondary" href="{% url 'home' %}">View homepage</a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No application submitted yet</h3>
+            <p>Start your internship application to proceed with the review process.</p>
+            <div class="button-stack">
+                <a class="btn" href="{% url 'apply' %}">Fill application form</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
