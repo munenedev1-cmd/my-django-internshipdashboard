@@ -22,10 +22,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'munene321')
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'true').lower() == 'true'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+DEBUG = os.environ.get('DEBUG', 'false').strip().lower() in {'1', 'true', 'yes', 'on'}
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        # Convenient for local development only; set SECRET_KEY in deployment.
+        SECRET_KEY = 'django-insecure-local-development-only'
+    else:
+        raise RuntimeError('SECRET_KEY must be set when DEBUG is disabled.')
+
+_allowed_hosts = os.environ.get('ALLOWED_HOSTS')
+ALLOWED_HOSTS = (
+    [host.strip() for host in _allowed_hosts.split(',') if host.strip()]
+    if _allowed_hosts
+    else ['localhost', '127.0.0.1']
+)
 
 
 # Application definition
@@ -126,3 +137,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+LOGIN_URL = 'login'

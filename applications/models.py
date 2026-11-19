@@ -1,5 +1,25 @@
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
+from pathlib import Path
+
+
+MAX_DOCUMENT_SIZE = 5 * 1024 * 1024
+
+
+def validate_document(upload):
+    allowed_extensions = {".pdf", ".jpg", ".jpeg", ".png"}
+    if Path(upload.name).suffix.lower() not in allowed_extensions:
+        raise ValidationError("Upload a PDF, JPG, or PNG file.")
+    if upload.size > MAX_DOCUMENT_SIZE:
+        raise ValidationError("Each document must be 5 MB or smaller.")
+
+
+def validate_photo(upload):
+    if Path(upload.name).suffix.lower() not in {".jpg", ".jpeg", ".png"}:
+        raise ValidationError("Upload the passport photo as a JPG or PNG file.")
+    if upload.size > MAX_DOCUMENT_SIZE:
+        raise ValidationError("Each document must be 5 MB or smaller.")
 
 
 class InternshipApplication(models.Model):
@@ -52,10 +72,10 @@ class InternshipApplication(models.Model):
     shif_membership_number = models.CharField(max_length=100, blank=True, default="")
     nssf_membership_number = models.CharField(max_length=100, blank=True, default="")
 
-    national_id_document = models.FileField(upload_to="documents/id/")
-    birth_certificate_document = models.FileField(upload_to="documents/birth/")
-    passport_photo = models.FileField(upload_to="documents/photo/")
-    kra_pin_certificate = models.FileField(upload_to="documents/kra/")
+    national_id_document = models.FileField(upload_to="documents/id/", validators=[validate_document])
+    birth_certificate_document = models.FileField(upload_to="documents/birth/", validators=[validate_document])
+    passport_photo = models.FileField(upload_to="documents/photo/", validators=[validate_photo])
+    kra_pin_certificate = models.FileField(upload_to="documents/kra/", validators=[validate_document])
 
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="submitted")
     created_at = models.DateTimeField(auto_now_add=True)

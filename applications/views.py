@@ -1,8 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.shortcuts import redirect, render
+from django.contrib.auth.forms import AuthenticationForm
+from django.http import FileResponse, Http404
+from django.core.exceptions import FieldDoesNotExist
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import InternshipApplicationForm, RegistrationForm
 from .models import InternshipApplication
@@ -69,3 +71,23 @@ def application_view(request):
 def dashboard(request):
     application = getattr(request.user, "internship_application", None)
     return render(request, "dashboard.html", {"application": application})
+
+
+@login_required
+def application_document(request, application_id, field_name):
+    application = get_object_or_404(InternshipApplication, pk=application_id)
+    if application.user_id != request.user.id and not request.user.is_staff:
+        raise Http404
+    try:
+        field = InternshipApplication._meta.get_field(field_name)
+    except FieldDoesNotExist:
+        raise Http404
+    if not field.is_relation and field.get_internal_type() == "FileField":
+        document = getattr(application, field_name)
+        if document and document.name.startswith("documents/"):
+            return FileResponse(
+                document.storage.open(document.name, "rb"),
+                as_attachment=True,
+                filename=document.name.rsplit("/", 1)[-1],
+            )
+    raise Http404
