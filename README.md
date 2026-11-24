@@ -4,7 +4,7 @@ A Django application for internship applicant registration, applications, and a 
 
 ## Requirements
 
-- Python 3.12 (the project dependencies are pinned in `requirements.txt`)
+- Python 3.14 (the project dependencies are pinned in `requirements.txt`; Django 6.1.3 supports Python 3.14)
 - A terminal in the project directory
 
 ## First-time setup
