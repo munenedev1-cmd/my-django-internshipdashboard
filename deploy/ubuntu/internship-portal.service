@@ -1,0 +1,21 @@
+[Unit]
+Description=Internship application portal (Gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=internship-portal
+Group=internship-portal
+WorkingDirectory=/opt/internship-portal
+EnvironmentFile=/etc/internship-portal.env
+ExecStart=/opt/internship-portal/.venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 --access-logfile - --error-logfile - internship_portal.wsgi:application
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/internship-portal
+
+[Install]
+WantedBy=multi-user.target
